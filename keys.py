@@ -8,3 +8,4 @@ avglight = "avglight/value"
 avgtemp = "avgtemp/value"
 
 flag = "flag/value"
+tuple_data = "tuple/value"
