@@ -1,4 +1,5 @@
 import paho.mqtt.client as mqtt
+import keys
 import time
 
 temp_value = 0
@@ -11,7 +12,7 @@ light_ctr = 0
 def on_message(client,userdata,message):
     global temp_value, light_value, flag, semaphore, light_ctr, temp_ctr
 
-    if message.topic=="lightsensor/value":
+    if message.topic==keys.lightsensor:
         curr_light_value = float(message.payload.decode("utf-8"))/255
         light_ctr += 1
         light_value += curr_light_value
@@ -21,9 +22,9 @@ def on_message(client,userdata,message):
         print "Average Light Sensor Value : ",light_value/light_ctr
         print
         sval = round(light_value/light_ctr,3)
-        client.publish('avglight/value',sval)
+        client.publish(keys.avglight,sval)
         
-    if message.topic=="tempsensor/value":
+    if message.topic==keys.tempsensor:
         curr_temp_value = float(message.payload.decode("utf-8"))/255
         temp_ctr += 1
         temp_value += curr_temp_value
@@ -33,7 +34,7 @@ def on_message(client,userdata,message):
         print "Average Temperature Sensor Value : ",temp_value/temp_ctr
         print
         sval = round(temp_value/temp_ctr,3)
-        client.publish('avgtemp/value',sval)
+        client.publish(keys.avgtemp,sval)
 
     
     
@@ -42,9 +43,9 @@ client.on_message = on_message
 client.connect('iot.eclipse.org')
 while 1:
     client.loop_start()
-    client.subscribe('lightsensor/value')
-    client.subscribe('tempsensor/value')
-    client.subscribe('lightactuator/value')
-    client.subscribe('tempactuator/value')
-    client.subscribe('flag/value')
+    client.subscribe(keys.lightsensor)
+    client.subscribe(keys.tempsensor)
+    client.subscribe(keys.lightactuator)
+    client.subscribe(keys.tempactuator)
+    client.subscribe(keys.flag)
     time.sleep(500)
