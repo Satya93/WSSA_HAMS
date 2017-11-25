@@ -2,6 +2,7 @@ import paho.mqtt.client as mqtt
 import keys
 import time
 import ast
+import csv
 
 temp_value = 0
 light_value = 0
@@ -16,13 +17,17 @@ def on_message(client,userdata,message):
         ctr+=1
         print "Tuple received"
         rx_data = ast.literal_eval(message.payload.decode("utf-8"))
-        light_value = float(int(rx_data[0]))
-        temp_value = float(int(rx_data[2]))
+        light_value = float(int(rx_data[0]))/255
+        temp_value = float(int(rx_data[2]))/255
         light_act = int(rx_data[1])
         temp_act = int(rx_data[3])
-        print "Light Sensor Value : ",light_value/ctr
+        data = [light_value,temp_value,light_act,temp_act]
+        with open(r'pure_data.csv','a') as f:
+            writer = csv.writer(f)
+            writer.writerow(data)
+        print "Light Sensor Value : ",light_value
         print "Light Actuator Value : ",light_act
-        print "Temperature Sensor Value : ",temp_value/ctr
+        print "Temperature Sensor Value : ",temp_value
         print "Temperature Actuator Value : ",temp_act
         print
         
