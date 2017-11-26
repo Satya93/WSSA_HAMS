@@ -13,44 +13,61 @@ semaphore = 0
 ctr = 0
 old_cost = 0
 new_cost = 0
+done = 0
+model_out = {}
+rx_data = 0
+
+def train():
+    global temp_value, light_value, flag, semaphore, ctr, old_cost, new_cost,rx_data, model_out
+    ctr+=1
+    light_value = round(float(int(rx_data[0]))/255,3)
+    temp_value = round(float(int(rx_data[2]))/255,3)
+    light_act = int(rx_data[1])
+    temp_act = int(rx_data[3])
+    data = [light_value,temp_value,light_act,temp_act]
+    with open(r'pure_data.csv','a') as f:
+        writer = csv.writer(f)
+        writer.writerow(data)
+        f.flush()
+    f.close()
+    print "Light Sensor Value : ",light_value
+    print "Light Actuator Value : ",light_act
+    #print "Temperature Sensor Value : ",temp_value
+    #print "Temperature Actuator Value : ",temp_act
+    #print "Samples : ",ctr
 
 def on_message(client,userdata,message):
-    global temp_value, light_value, flag, semaphore, ctr, old_cost, new_cost 
+    global temp_value, light_value, flag, semaphore, ctr, old_cost, new_cost, done, rx_data, model_out
+    rx_data = ast.literal_eval(message.payload.decode("utf-8"))
 
     if message.topic==keys.tuple_data:
-        ctr+=1
-        rx_data = ast.literal_eval(message.payload.decode("utf-8"))
-        light_value = round(float(int(rx_data[0]))/255,3)
-        temp_value = round(float(int(rx_data[2]))/255,3)
-        light_act = int(rx_data[1])
-        temp_act = int(rx_data[3])
-        data = [light_value,temp_value,light_act,temp_act]
-        with open(r'pure_data.csv','a') as f:
-            writer = csv.writer(f)
-            writer.writerow(data)
-            f.flush()
-        f.close()
-        print "Light Sensor Value : ",light_value
-        print "Light Actuator Value : ",light_act
-        print "Temperature Sensor Value : ",temp_value
-        print "Temperature Actuator Value : ",temp_act
-        print "Samples : ",ctr
-        print 
+        train()
 
-    if message.topic==keys.ack:
+    if message.topic==keys.ack and done == 0:
         value = int(message.payload.decode("utf-8"))
         if value == 1:
             print "Acknowledged!"
             old_cost = new_cost
             out = nn.build_model(3)
             new_cost = float(out[1])
+            model_out = out[0]
             if abs(old_cost-new_cost) < 0.002:
                 print "Neural network trained!"
+                done = 1
             client.publish(keys.flag,payload = 1,qos = 2)
     
-    if ctr>5:
+    if ctr>9 and done == 0:
         ctr = 0
         client.publish(keys.flag,payload = 0,qos = 2)
+
+    if done == 1:
+        rx_data = ast.literal_eval(message.payload.decode("utf-8"))
+        inp = [light_value,temp_value]
+        op = nn.predict(model_out, inp)
+        print "Predicted Output is ", op[0]
+
+    print 
+
 
     return
 

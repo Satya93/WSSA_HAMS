@@ -81,8 +81,8 @@ def predict(model, x):
     exp_scores = np.exp(z2)
     probs = exp_scores/np.sum(exp_scores, axis = 1, keepdims = True)
 
-    #return np.argmax(probs, axis = 1)
-    return probs
+    return np.argmax(probs, axis = 1)
+    #return probs
 
 # This function learns parameters for the neural network and returns the model.
 # - nn_hdim: Number of nodes in the hidden layer
