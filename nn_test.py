@@ -5,7 +5,7 @@ import matplotlib
 np.random.seed(0)
 
 # Load Data
-dataset = np.loadtxt("pure_data.csv",delimiter=",")
+dataset = np.loadtxt("impure_data.csv",delimiter=",")
 X = np.array(dataset[:,0:2])
 y = np.array(dataset[:,2:3])
 y = y.reshape(1,len(y))
@@ -91,7 +91,7 @@ def predict(model, x):
 def build_model(nn_hdim, num_passes=20000, print_loss=True):
     global dataset,X,y
 
-    dataset = np.loadtxt("pure_data.csv",delimiter=",")
+    dataset = np.loadtxt("impure_data.csv",delimiter=",")
     X = np.array(dataset[:,0:2])
     y = np.array(dataset[:,2:3])
     y = y.reshape(1,len(y))

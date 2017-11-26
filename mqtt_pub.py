@@ -29,10 +29,10 @@ while 1:
     if flag == 1:
         light_val = random.randint(0,255)
         temp_val = random.randint(0,255)
-        if light_val>80 and random.randint(0,255)>0:
+        if light_val>80 and random.randint(0,255)>50:
             light_act = 1
         else : light_act = 0
-        if temp_val>120 and random.randint(0,255)>0:
+        if temp_val>120 and random.randint(0,255)>50:
             temp_act = 1
         else : temp_act = 0
         print "Light Sensor : ",light_val

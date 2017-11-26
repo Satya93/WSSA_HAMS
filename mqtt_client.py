@@ -25,7 +25,7 @@ def train():
     light_act = int(rx_data[1])
     temp_act = int(rx_data[3])
     data = [light_value,temp_value,light_act,temp_act]
-    with open(r'pure_data.csv','a') as f:
+    with open(r'impure_data.csv','a') as f:
         writer = csv.writer(f)
         writer.writerow(data)
         f.flush()
