@@ -2,7 +2,6 @@ import numpy as np
 import sklearn.datasets
 import matplotlib.pyplot as plt
 import matplotlib
-
 np.random.seed(0)
 
 # Load Data
@@ -24,9 +23,17 @@ num_examples = len(X)
 eps = 0.005 # Learning rate for gradient descent
 reg_lam = 0.01 # Regularization strength
 
-# Loss Calculation function
 def calculate_loss(model):
-    global dataset
+    global dataset,X,y
+
+    nn_input_dim = 2
+    nn_output_dim = 2
+    num_examples = len(X)
+
+    # Parameters
+    eps = 0.005 # Learning rate for gradient descent
+    reg_lam = 0.01 # Regularization strength
+
     W1,b1,W2,b2 = model['W1'],model['b1'],model['W2'],model['b2']
 
     # Forward propogation
@@ -46,7 +53,15 @@ def calculate_loss(model):
 
 # Predict Output
 def predict(model, x):
-    global dataset
+    global dataset,X,y
+    nn_input_dim = 2
+    nn_output_dim = 2
+    num_examples = len(X)
+
+    # Parameters
+    eps = 0.005 # Learning rate for gradient descent
+    reg_lam = 0.01 # Regularization strength
+
     np.random.seed(0)
 
     # Load Data
@@ -74,7 +89,24 @@ def predict(model, x):
 # - num_passes: Number of passes through the training data for gradient descent
 # - print_loss: If True, print the loss every 1000 iterations
 def build_model(nn_hdim, num_passes=20000, print_loss=True):
-    global dataset
+    global dataset,X,y
+
+    dataset = np.loadtxt("pure_data.csv",delimiter=",")
+    X = np.array(dataset[:,0:2])
+    y = np.array(dataset[:,2:3])
+    y = y.reshape(1,len(y))
+    y = y[0]
+    y = y.astype(int)
+
+    nn_input_dim = 2
+    nn_output_dim = 2
+    num_examples = len(X)
+
+    # Parameters
+    eps = 0.005 # Learning rate for gradient descent
+    reg_lam = 0.01 # Regularization strength
+
+
     # Initialize the parameters to random values. We need to learn these.
     np.random.seed(0)
     W1 = np.random.randn(nn_input_dim, nn_hdim) / np.sqrt(nn_input_dim)
