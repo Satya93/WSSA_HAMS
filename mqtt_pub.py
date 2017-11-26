@@ -40,4 +40,4 @@ while 1:
         print 
         data = str([light_val,light_act,temp_val,temp_act])
         client.publish(keys.tuple_data,data)
-    time.sleep(2)
+    time.sleep(1)
