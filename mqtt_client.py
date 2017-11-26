@@ -3,6 +3,7 @@ import keys
 import time
 import ast
 import csv
+import nn_test as nn
 
 temp_value = 0
 light_value = 0
@@ -15,7 +16,6 @@ def on_message(client,userdata,message):
 
     if message.topic==keys.tuple_data:
         ctr+=1
-        print "Tuple received"
         rx_data = ast.literal_eval(message.payload.decode("utf-8"))
         light_value = round(float(int(rx_data[0]))/255,3)
         temp_value = round(float(int(rx_data[2]))/255,3)
@@ -29,7 +29,22 @@ def on_message(client,userdata,message):
         print "Light Actuator Value : ",light_act
         print "Temperature Sensor Value : ",temp_value
         print "Temperature Actuator Value : ",temp_act
-        print
+        print "Samples : ",ctr
+        print 
+
+    if message.topic==keys.ack:
+        value = int(message.payload.decode("utf-8"))
+        if value == 1:
+            print "Acknowledged!"
+            nn.build_model(3)
+            time.sleep(5)
+            client.publish(keys.flag,payload = 1,qos = 2)
+    
+    if ctr>5:
+        ctr = 0
+        client.publish(keys.flag,payload = 0,qos = 2)
+
+    return
 
     
     
@@ -39,5 +54,5 @@ client.connect('iot.eclipse.org')
 while 1:
     client.loop_start()
     client.subscribe(keys.tuple_data)
-    client.subscribe(keys.flag)
+    client.subscribe(keys.ack)
     time.sleep(500)
