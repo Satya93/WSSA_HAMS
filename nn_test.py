@@ -5,19 +5,19 @@ import matplotlib
 np.random.seed(0)
 
 # Load Data
-dataset = np.loadtxt("impure_data.csv",delimiter=",")
-X = np.array(dataset[:,0:2])
-y = np.array(dataset[:,2:3])
-y = y.reshape(1,len(y))
-y = y[0]
-y = y.astype(int)
+#dataset = np.loadtxt("impure_data.csv",delimiter=",")
+#X = np.array(dataset[:,0:2])
+#y = np.array(dataset[:,2:3])
+#y = y.reshape(1,len(y))
+#y = y[0]
+#y = y.astype(int)
 
 #X,y = sklearn.datasets.make_moons(200, noise = 0.20)
 
 # Metrics
-nn_input_dim = 2
-nn_output_dim = 2
-num_examples = len(X)
+#nn_input_dim = 2
+#nn_output_dim = 2
+#num_examples = len(X)
 
 # Parameters
 eps = 0.005 # Learning rate for gradient descent
@@ -55,7 +55,7 @@ def calculate_loss(model):
 def predict(model, x):
     global dataset,X,y
     nn_input_dim = 2
-    nn_output_dim = 2
+    nn_output_dim = 1
     num_examples = len(X)
 
     # Parameters

@@ -21,10 +21,10 @@ def train():
     global temp_value, light_value, flag, semaphore, ctr, old_cost, new_cost,rx_data, model_out
     ctr+=1
     light_value = round(float(int(rx_data[0]))/255,3)
-    temp_value = round(float(int(rx_data[2]))/255,3)
-    light_act = int(rx_data[1])
-    temp_act = int(rx_data[3])
-    data = [light_value,temp_value,light_act,temp_act]
+    temp_value = round(float(int(rx_data[1]))/255,3)
+    light_act = int(rx_data[2])
+    #temp_act = int(rx_data[3])
+    data = [light_value,temp_value,light_act]
     with open(r'impure_data.csv','a') as f:
         writer = csv.writer(f)
         writer.writerow(data)
@@ -46,13 +46,12 @@ def on_message(client,userdata,message):
     if message.topic==keys.ack and done == 0:
         value = int(message.payload.decode("utf-8"))
         if value == 1:
-            print "Acknowledged!"
+            print "Training Neural Network"
             old_cost = new_cost
             out = nn.build_model(3)
             new_cost = float(out[1])
             model_out = out[0]
-            if abs(old_cost-new_cost) < 0.002:
-                print "Neural network trained!"
+            if abs(old_cost-new_cost) < 0.02:
                 done = 1
             client.publish(keys.flag,payload = 1,qos = 2)
     
@@ -61,10 +60,16 @@ def on_message(client,userdata,message):
         client.publish(keys.flag,payload = 0,qos = 2)
 
     if done == 1:
+        print "Neural network trained!"
+        client.publish(keys.flag,payload = 2,qos = 2)
         rx_data = ast.literal_eval(message.payload.decode("utf-8"))
         inp = [light_value,temp_value]
         op = nn.predict(model_out, inp)
         print "Predicted Output is ", op[0]
+        inp.append(op[0])
+        inp = str(inp)
+        time.sleep(1)
+        client.publish(keys.tuple_data,inp)
 
     print 
 
