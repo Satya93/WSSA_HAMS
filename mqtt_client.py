@@ -17,8 +17,8 @@ def on_message(client,userdata,message):
         ctr+=1
         print "Tuple received"
         rx_data = ast.literal_eval(message.payload.decode("utf-8"))
-        light_value = float(int(rx_data[0]))/255
-        temp_value = float(int(rx_data[2]))/255
+        light_value = round(float(int(rx_data[0]))/255,3)
+        temp_value = round(float(int(rx_data[2]))/255,3)
         light_act = int(rx_data[1])
         temp_act = int(rx_data[3])
         data = [light_value,temp_value,light_act,temp_act]
@@ -30,18 +30,6 @@ def on_message(client,userdata,message):
         print "Temperature Sensor Value : ",temp_value
         print "Temperature Actuator Value : ",temp_act
         print
-        
-    if message.topic==keys.tempsensor:
-        curr_temp_value = float(message.payload.decode("utf-8"))/255
-        temp_ctr += 1
-        temp_value += curr_temp_value
-        
-        print "From Temperature Sensor"
-        print "Value Received :",curr_temp_value
-        print "Average Temperature Sensor Value : ",temp_value/temp_ctr
-        print
-        sval = round(temp_value/temp_ctr,3)
-        client.publish(keys.avgtemp,sval)
 
     
     
