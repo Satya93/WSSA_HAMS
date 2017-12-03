@@ -6,7 +6,7 @@ import csv
 import ast
 
 flag = 1
-value = 0
+value = 1
 
 def on_message(client,userdata,message):
     global flag, value
@@ -28,6 +28,7 @@ def on_message(client,userdata,message):
     
     if message.topic == keys.tuple_data and value == 2:
         rx_data = ast.literal_eval(message.payload.decode("utf-8"))
+        value = 0
         print "Enter Execution code"
         
     
@@ -38,7 +39,7 @@ client.loop_start()
 client.subscribe(keys.flag)
 client.subscribe(keys.tuple_data)
 while 1:
-    if flag == 1:
+    if flag == 1 and value < 0:
         light_val = random.randint(0,255)
         temp_val = random.randint(0,255)
         if light_val>80 and random.randint(0,255)>0:

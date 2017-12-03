@@ -46,6 +46,7 @@ def on_message(client,userdata,message):
         train()
 
     if message.topic==keys.ack and done == 0:
+        print rx_data
         value = int(message.payload.decode("utf-8"))
         if value == 1:
             print "Training Neural Network"
@@ -57,18 +58,25 @@ def on_message(client,userdata,message):
                 done = 1
             client.publish(keys.flag,payload = 1,qos = 2)
     
-    if ctr>90 and done == 0:
+    if ctr>9 and done == 0:
         ctr = 0
         client.publish(keys.flag,payload = 0,qos = 2)
 
     if done == 1:
         print "Neural network trained!"
         client.publish(keys.flag,payload = 2,qos = 2)
+        done = 2
+
+    if done == 2:
         rx_data = ast.literal_eval(message.payload.decode("utf-8"))
         inp = [light_value,temp_value]
         op = nn.predict(model_out, inp)
-        print "Predicted Output is ", op[0]
-        inp.append(op[0])
+        predc = op[0]
+        print "Predicted Output is ", predc
+        lgt_ot = predc%2
+        temp_ot = predc/2
+        inp.append(lgt_ot)
+        inp.append(temp_ot)
         inp = str(inp)
         time.sleep(1)
         client.publish(keys.tuple_data,inp)

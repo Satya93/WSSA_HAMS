@@ -82,8 +82,8 @@ def predict(model, x):
     exp_scores = np.exp(z2)
     probs = exp_scores/np.sum(exp_scores, axis = 1, keepdims = True)
 
-    #return np.argmax(probs, axis = 1)
-    return probs
+    return np.argmax(probs, axis = 1)
+    #return probs
 
 # This function learns parameters for the neural network and returns the model.
 # - nn_hdim: Number of nodes in the hidden layer
@@ -98,7 +98,6 @@ def build_model(nn_hdim, num_passes=20000, print_loss=True):
     y = y.reshape(1,len(y))
     y = y[0]
     y = y.astype(int)
-    print y
 
     nn_input_dim = 2
     nn_output_dim = 4
