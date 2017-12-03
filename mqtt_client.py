@@ -23,17 +23,19 @@ def train():
     light_value = round(float(int(rx_data[0]))/255,3)
     temp_value = round(float(int(rx_data[1]))/255,3)
     light_act = int(rx_data[2])
-    #temp_act = int(rx_data[3])
-    data = [light_value,temp_value,light_act]
-    with open(r'impure_data.csv','a') as f:
+    temp_act = int(rx_data[3])
+    act_status = temp_act*2 + light_act
+    
+    data = [light_value,temp_value,act_status]
+    with open(r'pure_data_temp.csv','a') as f:
         writer = csv.writer(f)
         writer.writerow(data)
         f.flush()
     f.close()
     print "Light Sensor Value : ",light_value
     print "Light Actuator Value : ",light_act
-    #print "Temperature Sensor Value : ",temp_value
-    #print "Temperature Actuator Value : ",temp_act
+    print "Temperature Sensor Value : ",temp_value
+    print "Temperature Actuator Value : ",temp_act
     #print "Samples : ",ctr
 
 def on_message(client,userdata,message):
@@ -55,7 +57,7 @@ def on_message(client,userdata,message):
                 done = 1
             client.publish(keys.flag,payload = 1,qos = 2)
     
-    if ctr>9 and done == 0:
+    if ctr>90 and done == 0:
         ctr = 0
         client.publish(keys.flag,payload = 0,qos = 2)
 

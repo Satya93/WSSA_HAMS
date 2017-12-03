@@ -27,7 +27,7 @@ def calculate_loss(model):
     global dataset,X,y
 
     nn_input_dim = 2
-    nn_output_dim = 2
+    nn_output_dim = 4
     num_examples = len(X)
 
     # Parameters
@@ -55,7 +55,7 @@ def calculate_loss(model):
 def predict(model, x):
     global dataset,X,y
     nn_input_dim = 2
-    nn_output_dim = 1
+    nn_output_dim = 4
     num_examples = len(X)
 
     # Parameters
@@ -66,10 +66,11 @@ def predict(model, x):
 
     # Load Data
     X = np.array(dataset[:,0:2])
-    y = np.array(dataset[:,2:3])
+    y = np.array(dataset[:,2])
     y = y.reshape(1,len(y))
-    y = y[0]
+    y = y[0:1]
     y = y.astype(int)
+    print y
 
     W1,b1,W2,b2 = model['W1'],model['b1'],model['W2'],model['b2']
     x = np.array(x)
@@ -81,8 +82,8 @@ def predict(model, x):
     exp_scores = np.exp(z2)
     probs = exp_scores/np.sum(exp_scores, axis = 1, keepdims = True)
 
-    return np.argmax(probs, axis = 1)
-    #return probs
+    #return np.argmax(probs, axis = 1)
+    return probs
 
 # This function learns parameters for the neural network and returns the model.
 # - nn_hdim: Number of nodes in the hidden layer
@@ -91,15 +92,16 @@ def predict(model, x):
 def build_model(nn_hdim, num_passes=20000, print_loss=True):
     global dataset,X,y
 
-    dataset = np.loadtxt("impure_data.csv",delimiter=",")
+    dataset = np.loadtxt("pure_data_temp.csv",delimiter=",")
     X = np.array(dataset[:,0:2])
-    y = np.array(dataset[:,2:3])
+    y = np.array(dataset[:,2])
     y = y.reshape(1,len(y))
     y = y[0]
     y = y.astype(int)
+    print y
 
     nn_input_dim = 2
-    nn_output_dim = 2
+    nn_output_dim = 4
     num_examples = len(X)
 
     # Parameters
@@ -130,6 +132,7 @@ def build_model(nn_hdim, num_passes=20000, print_loss=True):
         # Backpropagation
         delta3 = probs
         delta3[range(num_examples), y] -= 1
+        #print delta3
         dW2 = (a1.T).dot(delta3)
         db2 = np.sum(delta3, axis=0, keepdims=True)
         delta2 = delta3.dot(W2.T) * (1 - np.power(a1, 2))
@@ -152,7 +155,7 @@ def build_model(nn_hdim, num_passes=20000, print_loss=True):
         # Optionally print the loss.
         # This is expensive because it uses the whole dataset, so we don't want to do it too often.
           
-    print "Loss after iteration %i: %f" %(i, calculate_loss(model))
+    #print "Loss after iteration %i: %f" %(i, calculate_loss(model))
     return [model,calculate_loss(model)]
 
 # model = build_model(3)
