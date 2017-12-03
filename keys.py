@@ -11,3 +11,4 @@ flag = "flag/value"
 ack = "ack/value"
 
 tuple_data = "tuple/value"
+pred_tuple_data = "pred_tuple/value"
