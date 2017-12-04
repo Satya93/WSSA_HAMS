@@ -16,38 +16,52 @@ old_cost = 0
 new_cost = 0
 done = 0
 model_out = {}
+send_tuple = [0,0,0]
 rx_data = 0
 
+data_from_light = 0
+data_from_temp = 0
+act_light = 0
+act_temp = 0
+
 def train():
-    global temp_value, light_value, flag, semaphore, ctr, old_cost, new_cost,rx_data, model_out
+    global send_tuple, flag, semaphore, ctr, old_cost, new_cost,rx_data, model_out, act_light, act_temp
     ctr+=1
-    light_value = round(float(int(rx_data[0]))/255,3)
-    temp_value = round(float(int(rx_data[1]))/255,3)
-    light_act = int(rx_data[2])
-    temp_act = int(rx_data[3])
-    act_status = temp_act*2 + light_act
-    
-    data = [light_value,temp_value,act_status]
-    with open(r'pure_data_temp.csv','a') as f:
+    act_status = act_temp*2 + act_light
+    send_tuple[2] = act_status
+
+    with open(r'realworld_data.csv','a') as f:
         writer = csv.writer(f)
-        writer.writerow(data)
+        writer.writerow(send_tuple)
         f.flush()
     f.close()
-    print "Light Sensor Value : ",light_value
-    print "Light Actuator Value : ",light_act
-    print "Temperature Sensor Value : ",temp_value
-    print "Temperature Actuator Value : ",temp_act
+    print "Saved Value : ",send_tuple
     print "Done : ",done
     print "Samples : ",ctr
 
 def on_message(client,userdata,message):
-    global temp_value, light_value, flag, semaphore, ctr, old_cost, new_cost, done, rx_data, model_out, training_done
+    global temp_value, light_value, flag, semaphore, ctr, old_cost, new_cost, done, rx_data, model_out, training_done, send_tuple, act_light, act_temp, data_from_light, data_from_temp
     print "New Message!"
     print message.topic
     print message.payload
     rx_data = ast.literal_eval(message.payload.decode("utf-8"))
 
-    if message.topic==keys.tuple_data and training_done == 0:
+    if message.topic==keys.node_light and training_done == 0:
+        print rx_data
+        send_tuple[0] = round(float(int(rx_data[0]))/1024,3)
+        act_light = round(float(int(rx_data[1]))/1024,3)
+        data_from_light = 1
+        print "Sending Ack"
+        client.publish(keys.ack,1)
+
+    if message.topic==keys.node_temp and training_done == 0:
+        send_tuple[1] = round(float(int(rx_data[0]))/1024,3)
+        act_temp = round(float(int(rx_data[1]))/1024,3)
+        data_from_temp = 1
+
+    if data_from_light == 1 and data_from_temp == 1:
+        data_from_light = 0
+        data_from_temp = 0
         train()
 
     if message.topic==keys.ack and done == 0:
@@ -109,6 +123,7 @@ client.on_message = on_message
 client.connect('iot.eclipse.org')
 while 1:
     client.loop_start()
-    client.subscribe(keys.tuple_data)
+    client.subscribe(keys.node_light)
+    client.subscribe(keys.node_temp)
     client.subscribe(keys.ack)
     time.sleep(500)

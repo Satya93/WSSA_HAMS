@@ -12,3 +12,6 @@ ack = "ack/value"
 
 tuple_data = "tuple/value"
 pred_tuple_data = "pred_tuple/value"
+
+node_light = "node_light/value"
+node_temp = "node_temp/value"
