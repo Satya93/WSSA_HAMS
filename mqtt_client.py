@@ -21,14 +21,14 @@ rx_data = 0
 def train():
     global temp_value, light_value, flag, semaphore, ctr, old_cost, new_cost,rx_data, model_out
     ctr+=1
-    light_value = round(float(int(rx_data[0]))/255,3)
-    temp_value = round(float(int(rx_data[1]))/255,3)
+    light_value = round(float(int(rx_data[0]))/1024,3)
+    temp_value = round(float(int(rx_data[1]))/1024,3)
     light_act = int(rx_data[2])
     temp_act = int(rx_data[3])
     act_status = temp_act*2 + light_act
     
     data = [light_value,temp_value,act_status]
-    with open(r'pure_data_temp.csv','a') as f:
+    with open(r'realworld_data.csv','a') as f:
         writer = csv.writer(f)
         writer.writerow(data)
         f.flush()
